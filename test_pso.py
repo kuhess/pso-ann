@@ -19,8 +19,7 @@ def schaffer6(x):
 def test_simple_optimization():
     swarm = pso.ParticleSwarm(
             cost_func=evaluate_simple,
-            x_low=[-100., -100.],
-            x_high=[100., 100.],
+            dim=2,
             size=20
     )
 
@@ -30,12 +29,9 @@ def test_simple_optimization():
 def test_complex_optimization():
     swarm = pso.ParticleSwarm(
             cost_func=schaffer6,
-            x_low=[-100., -100.],
-            x_high=[100., 100.],
+            dim=2,
             size=20
     )
 
     best = swarm.optimize(epsilon=1e-6, max_iter=100000)
     assert schaffer6(best) < 1e-6
-
-
