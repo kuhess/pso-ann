@@ -1,38 +1,44 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import numpy.random
 
 
-class ParticleSwarm:
-    def __init__(self, cost_func, dim, size=50, chi=0.72984, phi_p=2.05, phi_g=2.05):
+def minimize_pso(cost_func, num_dimensions, num_iterations):
+    num_particles = num_dimensions * 2
+    swarm = ParticleSwarm(cost_func, num_dimensions, num_particles)
+    return swarm.minimize(num_iterations)
+
+
+class PSOResult(object):
+    def __init__(self, best_particle, best_score, num_iterations):
+        self.best_particle = best_particle
+        self.best_score = best_score
+        self.num_iterations = num_iterations
+
+
+class ParticleSwarm(object):
+    def __init__(self, cost_func, num_dimensions, num_particles, chi=0.72984, phi_p=2.05, phi_g=2.05):
         self.cost_func = cost_func
-        self.dim = dim
+        self.num_dimensions = num_dimensions
 
-        self.size = size
+        self.num_particles = num_particles
         self.chi = chi
         self.phi_p = phi_p
         self.phi_g = phi_g
 
-        self.X = np.random.uniform(size=(self.size, self.dim))
-        self.V = np.random.uniform(size=(self.size, self.dim))
+        self.X = np.random.uniform(size=(self.num_particles, self.num_dimensions))
+        self.V = np.random.uniform(size=(self.num_particles, self.num_dimensions))
 
         self.P = self.X.copy()
         self.S = self.cost_func(self.X)
         self.g = self.P[self.S.argmin()]
         self.best_score = self.S.min()
 
-    def optimize(self, epsilon=1e-3, max_iter=100):
-        iteration = 0
-        while self.best_score > epsilon and iteration < max_iter:
-            self.update()
-            iteration = iteration + 1
-        return self.g
 
-    def update(self):
+    def _update(self):
         # Velocities update
-        R_p = np.random.uniform(size=(self.size, self.dim))
-        R_g = np.random.uniform(size=(self.size, self.dim))
+        R_p = np.random.uniform(size=(self.num_particles, self.num_dimensions))
+        R_g = np.random.uniform(size=(self.num_particles, self.num_dimensions))
 
         self.V = self.chi * (self.V \
                 + self.phi_p * R_p * (self.P - self.X) \
@@ -50,3 +56,14 @@ class ParticleSwarm:
 
         self.g = self.P[self.S.argmin()]
         self.best_score = self.S.min()
+
+
+    def minimize(self, max_iter):
+        for i in range(max_iter):
+            self._update()
+        
+        return PSOResult(
+            best_particle=self.g,
+            best_score=self.best_score,
+            num_iterations=max_iter
+        )
