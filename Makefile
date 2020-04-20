@@ -1,7 +1,11 @@
 init:
 	pip install -r requirements.txt
 
-test:
-	py.test tests
+test: init
+	py.test
 
-.PHONY: init test
+example: init
+	python example_mnist.py
+	
+
+.PHONY: init test example
