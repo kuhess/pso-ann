@@ -22,6 +22,6 @@ class MultiLayerPerceptron:
         for i in range(self.num_layers-1):
             prev_layer = np.insert(layer, 0, 1, axis=0)
             o = np.dot(self.weights[i], prev_layer)
-            # sigmoid
+            # logistic sigmoid
             layer = scipy.special.expit(o)
         return layer

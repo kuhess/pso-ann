@@ -6,8 +6,8 @@ import sklearn.metrics
 import sklearn.datasets
 import sklearn.model_selection
 
-import pso
-import ann
+import psoann.pso as pso
+import psoann.ann as ann
 
 
 def dim_weights(shape):
@@ -45,7 +45,7 @@ def eval_neural_network(weights, shape, X, y):
     return mse
 
 def print_best_particle(best_particle):
-    print("New best particle found at iteration #{i} with mean squared error: {score}".format(i=best_particle[0], score=best_particle[1]))
+    print("New best particle found at iteration #{i} with mean squared error: {score:.6f}".format(i=best_particle[0], score=best_particle[1]))
 
 
 # Load MNIST digits from sklearn

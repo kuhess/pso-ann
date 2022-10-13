@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pytest
 import numpy as np
 
-import pso
+import psoann.pso as pso
 
 
 def _evaluate_simple(x):

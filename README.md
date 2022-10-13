@@ -2,23 +2,15 @@
 
 Small project to try Particle Swarm Optimization to optimize an Artificial Neural Network.
 
-## Install dependencies
-
-```
-pip install -r requirements.txt
-```
-
 ## Run tests
 
 ```
-py.test
+poetry run pytest
 ```
 
-## Run example with MNIST
+## Examples
 
-```
-python example_mnist.py
-```
+You can find run examples as standalone projects in [`examples`](./examples/).
 
 ## Resources
 
