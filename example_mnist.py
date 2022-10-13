@@ -50,7 +50,7 @@ def print_best_particle(best_particle):
 
 # Load MNIST digits from sklearn
 num_classes = 10
-mnist = sklearn.datasets.load_digits(num_classes)
+mnist = sklearn.datasets.load_digits(n_class=num_classes)
 X, X_test, y, y_test = sklearn.model_selection.train_test_split(mnist.data, mnist.target)
 
 num_inputs = X.shape[1]
