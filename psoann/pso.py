@@ -19,6 +19,7 @@ class ParticleSwarm(object):
         self,
         cost_func,
         num_dimensions,
+        boundaries,
         num_particles,
         chi=0.72984,
         phi_p=2.05,
@@ -26,18 +27,30 @@ class ParticleSwarm(object):
     ):
         self.cost_func = cost_func
         self.num_dimensions = num_dimensions
+        self.boundaries = boundaries
 
         self.num_particles = num_particles
         self.chi = chi
         self.phi_p = phi_p
         self.phi_g = phi_g
 
-        self.X = np.random.uniform(size=(self.num_particles, self.num_dimensions))
-        self.V = np.random.uniform(size=(self.num_particles, self.num_dimensions))
+        # Initialize the particles
+        # positions
+        self.X = np.random.uniform(
+            low=self.boundaries[0],
+            high=self.boundaries[1],
+            size=(self.num_particles, self.num_dimensions),
+        )
+        # velocities
+        self.V = np.zeros(shape=(self.num_particles, self.num_dimensions))
 
+        # Best positions
         self.P = self.X.copy()
+        # Scores
         self.S = self.cost_func(self.X)
+        # Best particle
         self.g = self.P[self.S.argmin()]
+        # Best score
         self.best_score = self.S.min()
 
     def _update(self):
@@ -51,12 +64,13 @@ class ParticleSwarm(object):
             + self.phi_g * R_g * (self.g - self.X)
         )
 
-        # Positions update
+        # Update positions
         self.X = self.X + self.V
 
-        # Best scores
+        # Compute scores
         scores = self.cost_func(self.X)
 
+        # Update best positions
         better_scores_idx = scores < self.S
         self.P[better_scores_idx] = self.X[better_scores_idx]
         self.S[better_scores_idx] = scores[better_scores_idx]

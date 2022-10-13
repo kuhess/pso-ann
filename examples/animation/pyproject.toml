@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mnist"
+version = "0.1.0"
+description = "Example with MNIST digits"
+authors = ["Quentin Suire <dev@quentinsuire.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+psoann = {path = "../../../pso-ann", develop = true}
+scikit-learn = "^1.1.2"
+matplotlib = "^3.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
