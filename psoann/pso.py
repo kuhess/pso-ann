@@ -18,9 +18,9 @@ class ParticleSwarm(object):
     def __init__(
         self,
         cost_func,
-        num_dimensions,
-        boundaries,
         num_particles,
+        num_dimensions,
+        boundaries=None,
         chi=0.72984,
         phi_p=2.05,
         phi_g=2.05,
@@ -37,8 +37,8 @@ class ParticleSwarm(object):
         # Initialize the particles
         # positions
         self.X = np.random.uniform(
-            low=self.boundaries[0],
-            high=self.boundaries[1],
+            low=self.boundaries[0] if self.boundaries else 0.0,
+            high=self.boundaries[1] if self.boundaries else 1.0,
             size=(self.num_particles, self.num_dimensions),
         )
         # velocities
@@ -55,8 +55,12 @@ class ParticleSwarm(object):
 
     def _update(self):
         # Velocities update
-        R_p = np.random.uniform(size=(self.num_particles, self.num_dimensions))
-        R_g = np.random.uniform(size=(self.num_particles, self.num_dimensions))
+        R_p = np.random.uniform(
+            low=0.0, high=1.0, size=(self.num_particles, self.num_dimensions)
+        )
+        R_g = np.random.uniform(
+            low=0.0, high=1.0, size=(self.num_particles, self.num_dimensions)
+        )
 
         self.V = self.chi * (
             self.V
@@ -72,10 +76,10 @@ class ParticleSwarm(object):
 
         # Update best positions
         better_scores_idx = scores < self.S
-        self.P[better_scores_idx] = self.X[better_scores_idx]
+        self.P[better_scores_idx, :] = self.X[better_scores_idx, :]
         self.S[better_scores_idx] = scores[better_scores_idx]
 
-        self.g = self.P[self.S.argmin()]
+        self.g = self.P[self.S.argmin(), :]
         self.best_score = self.S.min()
 
     def minimize(self, max_iter):
