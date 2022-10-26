@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "neurofish"
+version = "0.1.0"
+description = "Example of reinforcement learning"
+authors = ["Quentin Suire <dev@quentinsuire.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+psoann = {path = "../../../pso-ann", develop = true}
+scikit-learn = "^1.1.2"
+pygame = "^2.1.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
