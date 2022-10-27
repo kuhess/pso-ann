@@ -23,7 +23,6 @@ class MultiLayerPerceptronWeights:
         for i in range(len(shape) - 1):
             W = np.random.uniform(size=(shape[i + 1], shape[i] + 1))
             weights.append(W)
-            print(W.shape)
         return cls(shape, weights)
 
 
