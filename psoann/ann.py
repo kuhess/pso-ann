@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 import scipy.special
@@ -18,18 +19,40 @@ class MultiLayerPerceptronWeights:
         return self.shape[-1]
 
     @classmethod
-    def create_random(cls, shape: list[int]):
+    def create_random(cls, shape: list[int]) -> MultiLayerPerceptronWeights:
         weights = []
         for i in range(len(shape) - 1):
             W = np.random.uniform(size=(shape[i + 1], shape[i] + 1))
             weights.append(W)
         return cls(shape, weights)
 
+    @classmethod
+    def from_particle_position(
+        cls, particle_position: list[float], shape: list[int]
+    ) -> MultiLayerPerceptronWeights:
+        weights = []
+        idx = 0
+        for i in range(len(shape) - 1):
+            r = shape[i + 1]
+            c = shape[i] + 1
+            idx_min = idx
+            idx_max = idx + r * c
+            W = particle_position[idx_min:idx_max].reshape(r, c)
+            weights.append(W)
+        return cls(shape, weights)
+
+    def to_particle_position(self) -> list[float]:
+        w = np.asarray([])
+        for i in range(len(weights)):
+            v = weights[i].flatten()
+            w = np.append(w, v)
+        return w
+
 
 class MultiLayerPerceptron:
     @staticmethod
     def run(weights: MultiLayerPerceptronWeights, inputs):
-        layer = inputs  # todo check shape => it must be a vertical vector
+        layer = inputs
         for i in range(weights.num_layers() - 1):
             prev_layer = np.insert(layer, 0, 1, axis=0)
             o = np.dot(weights.weights[i], prev_layer)

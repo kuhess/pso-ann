@@ -15,33 +15,11 @@ def dim_weights(shape):
     return dim
 
 
-def weights_to_vector(weights):
-    w = np.asarray([])
-    for i in range(len(weights)):
-        v = weights[i].flatten()
-        w = np.append(w, v)
-    return w
-
-
-def vector_to_weights(vector, shape):
-    weights = []
-    idx = 0
-    for i in range(len(shape) - 1):
-        r = shape[i + 1]
-        c = shape[i] + 1
-        idx_min = idx
-        idx_max = idx + r * c
-        W = vector[idx_min:idx_max].reshape(r, c)
-        weights.append(W)
-    return weights
-
-
 def eval_neural_network(weights, shape, X, y):
     mse = np.asarray([])
     for w in weights:
-        weights = vector_to_weights(w, shape)
-        nn = ann.MultiLayerPerceptron(shape, weights=weights)
-        y_pred = nn.run(X)
+        ann_weights = ann.MultiLayerPerceptronWeights.from_particle_position(w, shape)
+        y_pred = ann.MultiLayerPerceptron.run(ann_weights, X)
         mse = np.append(
             mse, sklearn.metrics.mean_squared_error(np.atleast_2d(y), y_pred)
         )
@@ -74,9 +52,9 @@ for i in range(len(y_test)):
     y_test_true[i, y_test[i]] = 1
 
 # Set up
-shape = (num_inputs, 64, 32, num_classes)
+shape = (num_inputs, 50, 30, num_classes)
 
-cost_func = functools.partial(eval_neural_network, shape=shape, X=X, y=y_true.T)
+cost_func = functools.partial(eval_neural_network, shape=shape, X=X.T, y=y_true.T)
 
 swarm = pso.ParticleSwarm(
     cost_func, num_dimensions=dim_weights(shape), num_particles=30
@@ -86,7 +64,7 @@ swarm = pso.ParticleSwarm(
 i = 0
 best_scores = [(i, swarm.best_score)]
 print_best_particle(best_scores[-1])
-while swarm.best_score > 1e-6 and i < 500:
+while swarm.best_score > 1e-6 and i < 100:
     swarm._update()
     i = i + 1
     if swarm.best_score < best_scores[-1][1]:
@@ -94,7 +72,6 @@ while swarm.best_score > 1e-6 and i < 500:
         print_best_particle(best_scores[-1])
 
 # Test...
-best_weights = vector_to_weights(swarm.g, shape)
-best_nn = ann.MultiLayerPerceptron(shape, weights=best_weights)
-y_test_pred = np.round(best_nn.run(X_test))
+best_weights = ann.MultiLayerPerceptronWeights.from_particle_position(swarm.g, shape)
+y_test_pred = np.round(ann.MultiLayerPerceptron.run(best_weights, X_test.T))
 print(sklearn.metrics.classification_report(y_test_true, y_test_pred.T))
