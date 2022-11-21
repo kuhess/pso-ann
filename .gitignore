@@ -1,3 +1,7 @@
 .cache/
 __pycache__/
 *.pyc
+
+misc
+
+*.pickle

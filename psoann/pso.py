@@ -24,25 +24,33 @@ class ParticleSwarm(object):
         chi=0.72984,
         phi_p=2.05,
         phi_g=2.05,
+        omega=None,
     ):
         self.cost_func = cost_func
         self.num_dimensions = num_dimensions
-        self.boundaries = boundaries
+        self.boundaries = boundaries if boundaries else [0.0, 1.0]
 
         self.num_particles = num_particles
         self.chi = chi
         self.phi_p = phi_p
         self.phi_g = phi_g
+        self.omega = omega
 
         # Initialize the particles
         # positions
         self.X = np.random.uniform(
-            low=self.boundaries[0] if self.boundaries else 0.0,
-            high=self.boundaries[1] if self.boundaries else 1.0,
+            low=self.boundaries[0],
+            high=self.boundaries[1],
             size=(self.num_particles, self.num_dimensions),
         )
         # velocities
-        self.V = np.zeros(shape=(self.num_particles, self.num_dimensions))
+        self.v_max = np.abs(self.boundaries[1] - self.boundaries[0]) / 5
+
+        self.V = np.random.uniform(
+            low=-self.v_max,
+            high=self.v_max,
+            size=(self.num_particles, self.num_dimensions),
+        )
 
         # Best positions
         self.P = self.X.copy()
@@ -62,14 +70,26 @@ class ParticleSwarm(object):
             low=0.0, high=1.0, size=(self.num_particles, self.num_dimensions)
         )
 
-        self.V = self.chi * (
-            self.V
-            + self.phi_p * R_p * (self.P - self.X)
-            + self.phi_g * R_g * (self.g - self.X)
-        )
+        if self.omega is None:
+            self.V = self.chi * (
+                self.V
+                + self.phi_p * R_p * (self.P - self.X)
+                + self.phi_g * R_g * (self.g - self.X)
+            )
+        else:
+            self.V = (
+                self.omega * self.V
+                + self.phi_p * R_p * (self.P - self.X)
+                + self.phi_g * R_g * (self.g - self.X)
+            )
+
+        # Bound velocities
+        self.V = self.V.clip(min=-self.v_max, max=self.v_max)
 
         # Update positions
         self.X = self.X + self.V
+        # Bound positions
+        self.X = self.X.clip(min=self.boundaries[0], max=self.boundaries[1])
 
         # Compute scores
         scores = self.cost_func(self.X)
@@ -82,8 +102,10 @@ class ParticleSwarm(object):
         self.g = self.P[self.S.argmin(), :]
         self.best_score = self.S.min()
 
+        print(np.sum(better_scores_idx), scores.min())
+
     def minimize(self, max_iter):
-        for i in range(max_iter):
+        for _ in range(max_iter):
             self._update()
 
         return PSOResult(

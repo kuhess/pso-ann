@@ -57,14 +57,15 @@ shape = (num_inputs, 50, 30, num_classes)
 cost_func = functools.partial(eval_neural_network, shape=shape, X=X.T, y=y_true.T)
 
 swarm = pso.ParticleSwarm(
-    cost_func, num_dimensions=dim_weights(shape), num_particles=30
+    cost_func, num_dimensions=dim_weights(shape), num_particles=30, boundaries=(-1, 1)
 )
+print("Dimensions:", swarm.num_dimensions)
 
 # Train...
 i = 0
 best_scores = [(i, swarm.best_score)]
 print_best_particle(best_scores[-1])
-while swarm.best_score > 1e-6 and i < 100:
+while swarm.best_score > 1e-6 and i < 300:
     swarm._update()
     i = i + 1
     if swarm.best_score < best_scores[-1][1]:
@@ -75,3 +76,5 @@ while swarm.best_score > 1e-6 and i < 100:
 best_weights = ann.MultiLayerPerceptronWeights.from_particle_position(swarm.g, shape)
 y_test_pred = np.round(ann.MultiLayerPerceptron.run(best_weights, X_test.T))
 print(sklearn.metrics.classification_report(y_test_true, y_test_pred.T))
+
+# print(best_weights)

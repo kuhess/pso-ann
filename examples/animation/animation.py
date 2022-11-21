@@ -8,12 +8,12 @@ import psoann.pso as pso
 import optim_functions
 
 # Optimization function
-optimization_func_class = optim_functions.Beale
+optimization_func_class = optim_functions.Rastrigin
 
 # Path of animation output file
 # if variable is set to None, the animation will not be saved
 animation_file = None
-animation_file = "animation.mp4"
+# animation_file = "animation.mp4"
 
 frame_per_sec = 25
 duration = 10
