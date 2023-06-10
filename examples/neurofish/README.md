@@ -12,7 +12,7 @@ poetry run python train.py
 
 This will generate two files:
 - the first `[DATETIME]_dummy_particle.pickle` before the training
-- the first `[DATETIME]_best_particle.pickle` with the weight of the best particle after the training
+- the second `[DATETIME]_best_particle.pickle` with the weight of the best particle after the training
 
 
 ## Run
