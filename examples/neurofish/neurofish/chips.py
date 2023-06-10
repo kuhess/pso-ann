@@ -8,7 +8,7 @@ from .typing import Position, random_position
 @dataclass
 class Chips:
     position: Position
-    radius: float = 5
+    radius: float = 15
 
     def can_be_eaten(self, position: Position) -> bool:
         return np.linalg.norm(np.mat(self.position) - position) <= self.radius

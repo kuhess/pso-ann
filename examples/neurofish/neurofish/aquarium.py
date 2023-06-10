@@ -13,17 +13,9 @@ class Aquarium:
     fishes: list[Neurofish] = field(default_factory=list)
     chips: list[Chips] = field(default_factory=list)
 
-    # def add_fish(self, fish: Neurofish) -> Aquarium:
-    #     self.fishes.append(fish)
-    #     return self
-
     def add_chips(self, chips: Chips) -> Aquarium:
         self.chips.append(chips)
         return self
-
-    # def add_random_chips(self) -> Aquarium:
-    #     chips = Chips.random(self.width, self.height)
-    #     self.add_chips(chips)
 
     def remove_chips(self, chips) -> Aquarium:
         self.chips.remove(chips)

@@ -77,12 +77,38 @@ def env(chips):
     "fish, env, vision",
     [
         (fish((0, 0), np.deg2rad(0), 1), env([]), [0]),
-        (fish((0, 0), np.deg2rad(0), 1), env([Chips((1.6, 0))]), [10 - 1.6]),
-        (fish((0, 0), np.deg2rad(0), 3), env([Chips((1.6, 0))]), [0, 10 - 1.6, 0]),
-        (fish((0, 0), np.arctan2(4, 3), 3), env([Chips((3, 4))]), [0, 10 - 5, 0]),
-        (fish((100, -200), np.deg2rad(-90), 1), env([Chips((100, -202))]), [10 - 2]),
+        (
+            fish((0, 0), np.deg2rad(0), 1),
+            env([Chips((1.6, 0))]),
+            np.asarray([10 - 1.6]) / 10,
+        ),
+        (
+            fish((0, 0), np.deg2rad(0), 3),
+            env([Chips((1.6, 0))]),
+            np.asarray([0, 10 - 1.6, 0]) / 10,
+        ),
+        (
+            fish((0, 0), np.arctan2(4, 3), 3),
+            env([Chips((3, 4))]),
+            np.asarray([0, 10 - 5, 0]) / 10,
+        ),
+        (
+            fish((100, -200), np.deg2rad(-90), 1),
+            env([Chips((100, -202))]),
+            np.asarray([10 - 2]) / 10,
+        ),
+        (
+            fish((0, 0), np.deg2rad(-180), 1),
+            env([Chips((-1.2, 0))]),
+            np.asarray([10 - 1.2]) / 10,
+        ),
+        (
+            fish((0, 0), np.deg2rad(-180), 3),
+            env([Chips((-1.2, 0))]),
+            np.asarray([0, 10 - 1.2, 0]) / 10,
+        ),
     ],
 )
 def test_get_vision_data2(fish, env, vision):
     res = fish.get_vision_data(env)
-    np.testing.assert_array_equal(res, np.asarray(vision))
+    np.testing.assert_array_almost_equal(res, np.asarray(vision))

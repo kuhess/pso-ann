@@ -44,7 +44,7 @@ class ParticleSwarm(object):
             size=(self.num_particles, self.num_dimensions),
         )
         # velocities
-        self.v_max = np.abs(self.boundaries[1] - self.boundaries[0]) / 5
+        self.v_max = np.abs(self.boundaries[1] - self.boundaries[0])# * 0.05
 
         self.V = np.random.uniform(
             low=-self.v_max,
@@ -101,8 +101,6 @@ class ParticleSwarm(object):
 
         self.g = self.P[self.S.argmin(), :]
         self.best_score = self.S.min()
-
-        print(np.sum(better_scores_idx), scores.min())
 
     def minimize(self, max_iter):
         for _ in range(max_iter):

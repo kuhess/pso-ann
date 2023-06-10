@@ -17,13 +17,6 @@ from neurofish.chips import Chips
 from neurofish.fish import FishEnvironment, Neurofish
 
 
-# def scale_position(scale: float, position: Position) -> Position:
-#     return (
-#         position[0] * scale,
-#         position[1] * scale,
-#     )
-
-
 class FishSprite(pg.sprite.Sprite):
     def __init__(self, neurofish: Neurofish):
         super(FishSprite, self).__init__()
@@ -127,8 +120,6 @@ class AquariumListener(Listener):
         if isinstance(event, TickEvent):
             for fish in self.aquarium.fishes:
                 fish.update(self.aquarium._get_fish_env(fish.position))
-                # print(fish.position)
-                # print(fish.angle_deg())
                 # eat chips if possible
                 chips = self.aquarium._get_chips(fish.position)
                 for c in chips:
@@ -154,7 +145,6 @@ class KeyboardMouseListener(Listener):
                 elif event.type == pg.MOUSEBUTTONUP:
                     self.event_manager.publish(
                         AddChipsEvent(
-                            # chips=Chips(scale_position(0.1, pg.mouse.get_pos()))
                             chips=Chips(pg.mouse.get_pos())
                         )
                     )
@@ -210,10 +200,10 @@ def main(path):
         Neurofish(
             ann_weights,
             (screen_width / 2, screen_height / 2),
-            vision_resolution=ann_weights.shape[0] - 1,
+            vision_resolution=ann_weights.shape[0] - 2,
         )
     ]
-    num_chips = 10
+    num_chips = 5
     chips = [Chips.random(width, height) for _ in range(num_chips)]
 
     aquarium = Aquarium(screen_width, screen_height, neurofishes, chips=chips)
@@ -241,9 +231,9 @@ def main2(path):
     ann_weights = pickle.load(open(path, "rb"))
 
     fish = Neurofish(
-        ann_weights, (100, 100), vision_resolution=ann_weights.shape[0] - 1
+        ann_weights, (100, 100), vision_resolution=ann_weights.shape[0] - 2
     )
-    num_chips = 1000
+    num_chips = 10
 
     chips = [Chips.random(width, height) for _ in range(num_chips)]
     aquarium = Aquarium(width, height, [fish], chips)

@@ -15,15 +15,17 @@ from neurofish.chips import Chips
 from neurofish.aquarium import Aquarium
 
 
-def dim_weights(shape):
-    dim = 0
-    for i in range(len(shape) - 1):
-        dim = dim + (shape[i] + 1) * shape[i + 1]
-    return dim
-
-
 def print_best_particle(score):
     print(f"Best particle at iteration #{score[0]} has score: {score[1]}")
+
+
+def store_dummy_particle(swarm: pso.ParticleSwarm, shape):
+    output_filename = f'{datetime.now().strftime("%Y%m%d%H%M%S")}_dummy_particle.pickle'
+    print(f"Dump dummy particle to: {output_filename}")
+
+    best_weights = MultiLayerPerceptronWeights.from_particle_position(swarm.P[0], shape)
+
+    pickle.dump(best_weights, open(output_filename, "wb"))
 
 
 def store_best_particle(swarm: pso.ParticleSwarm, shape):
@@ -32,10 +34,6 @@ def store_best_particle(swarm: pso.ParticleSwarm, shape):
 
     best_weights = MultiLayerPerceptronWeights.from_particle_position(swarm.g, shape)
 
-    # avg_particle = np.mean(swarm.X, axis=0)
-    # best_weights = MultiLayerPerceptronWeights.from_particle_position(
-    #     avg_particle, shape
-    # )
 
     pickle.dump(best_weights, open(output_filename, "wb"))
 
@@ -48,12 +46,18 @@ def evaluate(particle_positions, shape, width, height, num_chips, vision_resolut
     dummy_weights = MultiLayerPerceptronWeights.create_random(shape)
     common_fish = Neurofish(
         ann_weights=dummy_weights,
-        position=random_position(width, height),  # (width / 2, height / 2),
+        position=random_position(width, height),
         angle_rad=np.random.uniform(-np.pi, np.pi),
         vision_resolution=vision_resolution,
     )
+    exclude_radius = 100
     common_chips = [
-        Chips.random(width, height, exclude_pos=common_fish.position, exclude_radius=20)
+        Chips.random(
+            width,
+            height,
+            exclude_pos=common_fish.position,
+            exclude_radius=exclude_radius,
+        )
         for _ in range(num_chips)
     ]
 
@@ -67,27 +71,26 @@ def evaluate(particle_positions, shape, width, height, num_chips, vision_resolut
         aquarium = Aquarium(width, height, [fish], chips)
         for _ in range(500):
             aquarium.update()
-            if len(aquarium.chips) == 0:
+            if len(aquarium.chips) < num_chips:
                 aquarium.add_chips(
                     Chips.random(
                         width,
                         height,
                         exclude_pos=common_fish.position,
-                        exclude_radius=20,
+                        exclude_radius=exclude_radius,
                     )
                 )
-
         scores[p] = -fish.num_chips_eaten
     return scores
 
 
 # Set up
-vision_resolution = 50
+vision_resolution = 7
 num_outputs = 2
-shape = (vision_resolution + 1, 30, 15, num_outputs)
-width = 500
-height = 500
-num_chips = 1
+shape = (vision_resolution + 2, 5, 3, num_outputs)
+width = 1000
+height = 1000
+num_chips = 5
 cost_func = functools.partial(
     evaluate,
     shape=shape,
@@ -98,27 +101,28 @@ cost_func = functools.partial(
 )
 swarm = pso.ParticleSwarm(
     cost_func,
-    num_dimensions=dim_weights(shape),
+    num_dimensions=MultiLayerPerceptronWeights.num_dimensions(shape),
     num_particles=30,
-    boundaries=(-1, 1),
+    boundaries=(-5, 5),
     # omega=-0.2089,
     # phi_p=-0.0787,
     # phi_g=3.7637,
 )
 print("Dimensions:", swarm.num_dimensions)
 
+store_dummy_particle(swarm, shape)
 
+# save best particle on Ctrl+C
 def signal_handler(signum, frame):
     store_best_particle(swarm, shape)
     exit(1)
-
-
 signal.signal(signal.SIGINT, signal_handler)
 
 # Train...
 print_best_particle((0, swarm.best_score))
-for i in range(200):
+for i in range(10):
     swarm._update()
     print_best_particle((i + 1, swarm.best_score))
 
+# save best particle after training
 store_best_particle(swarm, shape)
