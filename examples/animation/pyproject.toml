@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "mnist"
+name = "animation"
 version = "0.1.0"
-description = "Example with MNIST digits"
+description = "Example with animation of the particles during optimization"
 authors = ["Quentin Suire <dev@quentinsuire.com>"]
 readme = "README.md"
 

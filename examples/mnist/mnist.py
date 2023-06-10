@@ -8,44 +8,15 @@ import psoann.pso as pso
 import psoann.ann as ann
 
 
-def dim_weights(shape):
-    dim = 0
-    for i in range(len(shape) - 1):
-        dim = dim + (shape[i] + 1) * shape[i + 1]
-    return dim
-
-
-def weights_to_vector(weights):
-    w = np.asarray([])
-    for i in range(len(weights)):
-        v = weights[i].flatten()
-        w = np.append(w, v)
-    return w
-
-
-def vector_to_weights(vector, shape):
-    weights = []
-    idx = 0
-    for i in range(len(shape) - 1):
-        r = shape[i + 1]
-        c = shape[i] + 1
-        idx_min = idx
-        idx_max = idx + r * c
-        W = vector[idx_min:idx_max].reshape(r, c)
-        weights.append(W)
-    return weights
-
-
 def eval_neural_network(weights, shape, X, y):
-    mse = np.asarray([])
+    scores = np.asarray([])
     for w in weights:
-        weights = vector_to_weights(w, shape)
-        nn = ann.MultiLayerPerceptron(shape, weights=weights)
-        y_pred = nn.run(X)
-        mse = np.append(
-            mse, sklearn.metrics.mean_squared_error(np.atleast_2d(y), y_pred)
+        ann_weights = ann.MultiLayerPerceptronWeights.from_particle_position(w, shape)
+        score = sklearn.metrics.log_loss(
+            y, ann.MultiLayerPerceptron.run(ann_weights, X)
         )
-    return mse
+        scores = np.append(scores, score)
+    return scores
 
 
 def print_best_particle(best_particle):
@@ -74,27 +45,60 @@ for i in range(len(y_test)):
     y_test_true[i, y_test[i]] = 1
 
 # Set up
-shape = (num_inputs, 64, 32, num_classes)
+shape = (num_inputs, 50, 30, num_classes)
 
-cost_func = functools.partial(eval_neural_network, shape=shape, X=X, y=y_true.T)
+cost_func = functools.partial(eval_neural_network, shape=shape, X=X.T, y=y_true.T)
 
 swarm = pso.ParticleSwarm(
-    cost_func, num_dimensions=dim_weights(shape), num_particles=30
+    cost_func,
+    num_dimensions=ann.MultiLayerPerceptronWeights.num_dimensions(shape),
+    num_particles=50,
+    boundaries=(-1, 1),
 )
+print("ANN Dimensions:", swarm.num_dimensions)
+print()
 
-# Train...
-i = 0
-best_scores = [(i, swarm.best_score)]
-print_best_particle(best_scores[-1])
-while swarm.best_score > 1e-6 and i < 500:
+# Train with PSO...
+print("# Train with PSO\n")
+i_pso = 0
+scores_pso = [(i_pso, swarm.best_score)]
+while swarm.best_score > 1e-6 and i_pso < 200:
     swarm._update()
-    i = i + 1
-    if swarm.best_score < best_scores[-1][1]:
-        best_scores.append((i, swarm.best_score))
-        print_best_particle(best_scores[-1])
+    i_pso += 1
+    scores_pso.append((i_pso, swarm.best_score))
+    print(scores_pso[-1])
 
 # Test...
-best_weights = vector_to_weights(swarm.g, shape)
-best_nn = ann.MultiLayerPerceptron(shape, weights=best_weights)
-y_test_pred = np.round(best_nn.run(X_test))
+best_weights_pso = ann.MultiLayerPerceptronWeights.from_particle_position(
+    swarm.g, shape
+)
+y_test_pred = np.round(ann.MultiLayerPerceptron.run(best_weights_pso, X_test.T))
 print(sklearn.metrics.classification_report(y_test_true, y_test_pred.T))
+
+
+# Train with backpropagation
+print("# Train with backpropagation\n")
+
+alpha = 0.001
+
+i_bp = 0
+weights = ann.MultiLayerPerceptronWeights.create_random(shape, boundaries=(-1, 1))
+score = sklearn.metrics.log_loss(y_true.T, ann.MultiLayerPerceptron.run(weights, X.T))
+scores_bp = [(i_bp, score)]
+
+while score > 1e-6 and i_bp < 200:
+    weights = ann.MultiLayerPerceptron.backpropagate(weights, X.T, y_true.T, alpha)
+    score = sklearn.metrics.log_loss(
+        y_true.T, ann.MultiLayerPerceptron.run(weights, X.T)
+    )
+    i_bp += 1
+    scores_bp.append((i_bp, score))
+    print(scores_bp[-1])
+
+
+# Test...
+best_weights_bp = weights
+y_test_pred = np.round(ann.MultiLayerPerceptron.run(best_weights_bp, X_test.T))
+print(sklearn.metrics.classification_report(y_test_true, y_test_pred.T))
+
+# print(best_weights)

@@ -8,12 +8,12 @@ import psoann.pso as pso
 import optim_functions
 
 # Optimization function
-optimization_func_class = optim_functions.Beale
+optimization_func_class = optim_functions.Rastrigin
 
 # Path of animation output file
 # if variable is set to None, the animation will not be saved
 animation_file = None
-animation_file = "animation.mp4"
+# animation_file = "animation.mp4"
 
 frame_per_sec = 25
 duration = 10
@@ -26,9 +26,12 @@ swarm = pso.ParticleSwarm(
     num_dimensions=2,
     num_particles=40,
     boundaries=optimization_func_class.boundaries(),
-    chi=0.98,
-    phi_g=0.1,
-    phi_p=0.1,
+    # chi=0.98,
+    # phi_g=0.1,
+    # phi_p=0.1,
+    omega=-0.2089,
+    phi_p=-0.0787,
+    phi_g=3.7637,
 )
 
 # Setup the figure
