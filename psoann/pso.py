@@ -1,12 +1,6 @@
 import numpy as np
 
 
-def minimize_pso(cost_func, num_dimensions, num_iterations):
-    num_particles = num_dimensions * 2
-    swarm = ParticleSwarm(cost_func, num_dimensions, num_particles)
-    return swarm.minimize(num_iterations)
-
-
 class PSOResult(object):
     def __init__(self, best_particle, best_score, num_iterations):
         self.best_particle = best_particle

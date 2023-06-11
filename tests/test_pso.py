@@ -21,14 +21,22 @@ def _schaffer6(x):
 
 
 def test_simple_optimization():
-    result = pso.minimize_pso(
-        cost_func=_evaluate_simple, num_dimensions=2, num_iterations=100
+    swarm = pso.ParticleSwarm(
+        cost_func=_evaluate_simple,
+        num_dimensions=2,
+        num_particles=40,
     )
+    result = swarm.minimize(max_iter=100)
     assert result.best_score < 1e-6
 
 
+
+
 def test_complex_optimization():
-    result = pso.minimize_pso(
-        cost_func=_schaffer6, num_dimensions=2, num_iterations=100
+    swarm = pso.ParticleSwarm(
+        cost_func=_schaffer6,
+        num_dimensions=2,
+        num_particles=40,
     )
+    result = swarm.minimize(max_iter=100)
     assert result.best_score < 1e-6
