@@ -50,7 +50,7 @@ def compute_batch_fitness(particles_pos, env: gym.Env, n_episodes: int):
 
 
 num_inputs = flatdim(env.observation_space)
-num_outputs = flatdim(env.action_space)
+num_outputs = 1
 shape = [num_inputs, 8, 8, num_outputs]
 
 

@@ -26,8 +26,8 @@ def compute_fitness_function(
     ann_weights: MultiLayerPerceptronWeights, env: gym.Env, n_episodes: int
 ):
     env.reset()
-    # env.state = np.random.uniform(low=(-np.pi, 0.0), high=(-np.pi, 0.0))
-    env.state = np.asarray([-np.pi, 0.0])
+    env.state = np.random.uniform(low=(-np.pi, 0.0), high=(-np.pi, 0.0))
+    # env.state = np.asarray([-np.pi, 0.0])
     theta, thetadot = env.state
     obs = np.array([np.cos(theta), np.sin(theta), thetadot], dtype=np.float32)
     # obs = env._get_obs()
@@ -53,7 +53,7 @@ def compute_batch_fitness(particles_pos, env: gym.Env, n_episodes: int):
 
 
 num_inputs = flatdim(env.observation_space)
-num_outputs = flatdim(env.action_space)
+num_outputs = 1
 shape = [num_inputs, 10, 5, num_outputs]
 
 
