@@ -2,6 +2,8 @@
 
 Small project to try Particle Swarm Optimization to optimize an Artificial Neural Network.
 
+![Optimization of dropwave function with a particle swarm](images/animation-snapshot.png)
+
 ## Run the examples
 
 You can find examples as standalone projects in [`examples`](./examples/).
