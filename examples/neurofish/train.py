@@ -34,7 +34,6 @@ def store_best_particle(swarm: pso.ParticleSwarm, shape):
 
     best_weights = MultiLayerPerceptronWeights.from_particle_position(swarm.g, shape)
 
-
     pickle.dump(best_weights, open(output_filename, "wb"))
 
 
@@ -116,6 +115,8 @@ store_dummy_particle(swarm, shape)
 def signal_handler(signum, frame):
     store_best_particle(swarm, shape)
     exit(1)
+
+
 signal.signal(signal.SIGINT, signal_handler)
 
 # Train...

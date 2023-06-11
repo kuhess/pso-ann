@@ -38,7 +38,7 @@ class ParticleSwarm(object):
             size=(self.num_particles, self.num_dimensions),
         )
         # velocities
-        self.v_max = np.abs(self.boundaries[1] - self.boundaries[0])# * 0.05
+        self.v_max = np.abs(self.boundaries[1] - self.boundaries[0])  # * 0.05
 
         self.V = np.random.uniform(
             low=-self.v_max,

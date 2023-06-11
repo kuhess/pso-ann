@@ -144,9 +144,7 @@ class KeyboardMouseListener(Listener):
                     self.event_manager.publish(QuitEvent())
                 elif event.type == pg.MOUSEBUTTONUP:
                     self.event_manager.publish(
-                        AddChipsEvent(
-                            chips=Chips(pg.mouse.get_pos())
-                        )
+                        AddChipsEvent(chips=Chips(pg.mouse.get_pos()))
                     )
 
 
