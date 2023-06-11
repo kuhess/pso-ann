@@ -1,5 +1,7 @@
 # PSO-ANN
 
+[![CI](https://github.com/kuhess/pso-ann/actions/workflows/main.yml/badge.svg)](https://github.com/kuhess/pso-ann/actions/workflows/main.yml)
+
 Small project to try Particle Swarm Optimization to optimize an Artificial Neural Network.
 
 ![Optimization of dropwave function with a particle swarm](images/animation-snapshot.png)
