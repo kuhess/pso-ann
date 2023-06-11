@@ -65,12 +65,18 @@ class ParticleSwarm(object):
         )
 
         if self.omega is None:
+            # Clerc and Kennedy (2002)
+            # "The particle swarm - explosion, stability, and convergence in a multidimensional complex space"
+            # DOI 10.1109/4235.985692
             self.V = self.chi * (
                 self.V
                 + self.phi_p * R_p * (self.P - self.X)
                 + self.phi_g * R_g * (self.g - self.X)
             )
         else:
+            # Shi and Eberhart (1998)
+            # "A Modified Particle Swarm Optimizer"
+            # DOI 10.1109/ICEC.1998.699146
             self.V = (
                 self.omega * self.V
                 + self.phi_p * R_p * (self.P - self.X)
