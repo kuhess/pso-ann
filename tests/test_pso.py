@@ -30,8 +30,6 @@ def test_simple_optimization():
     assert result.best_score < 1e-6
 
 
-
-
 def test_complex_optimization():
     swarm = pso.ParticleSwarm(
         cost_func=_schaffer6,

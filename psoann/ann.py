@@ -50,12 +50,13 @@ class MultiLayerPerceptronWeights:
             idx_max = idx + (r * c)
             W = particle_position[idx_min:idx_max].reshape(r, c)
             weights.append(W)
+            idx = idx_max
         return cls(shape, weights)
 
     def to_particle_position(self) -> list[float]:
         w = np.asarray([])
-        for i in range(len(weights)):
-            v = weights[i].flatten()
+        for i in range(len(self.weights)):
+            v = self.weights[i].flatten()
             w = np.append(w, v)
         return w
 
